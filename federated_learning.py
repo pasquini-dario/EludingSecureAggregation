@@ -23,24 +23,30 @@ class FL_server:
         for i, user_i in enumerate(self.users):
             # Model Inconsistency
             if i == self.target:
+                print(f"Sending honest parameters to user {i}")
                 # target user. Send normal parameter
                 parameters = clone_list_tensors(self.global_parameters)
             else:
+                print(f"Sending tampered parameters to user {i}")
                 parameters = clone_list_tensors(suppressed_parameters)
                 
             user_i.set_model(parameters)
             
+        print("End model distribution\n")
     
     def SA(self):
         # Virtual Secure Aggregation
         gradients = [None] * self.num_users
 
         for i, user_i in enumerate(self.users):
+            print(f"Receiving and aggregating model update from user {i}")
             g = user_i.local_training()
             gradients[i] = g
             
         agg_model_update = sum_list_tensors(gradients)
         agg_model_update = [x.numpy() for x in agg_model_update]
+        
+        print("End aggregation\n")
         
         return agg_model_update
             

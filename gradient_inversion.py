@@ -92,3 +92,27 @@ def gradient_inversion(
             print(f'\t[{pg}%] loss: {loss.numpy()}')
             
     return x_.numpy(), y_var.numpy(), logs
+
+
+def check_gradient(aggregation, target_gradient, verbose=True):
+    assert len(aggregation) == len(target_gradient)
+    n = len(aggregation)
+    
+    num_par = 0
+    different_par = 0
+    for i in range(n):
+        agg_i = aggregation[i].reshape(-1)
+        tar_i = target_gradient[i].reshape(-1)
+        
+        assert len(agg_i) == len(tar_i)
+        
+        num_par += len(agg_i)
+        diff = (agg_i != tar_i).sum()
+        different_par += diff
+        
+        if verbose:
+            print(f'\tlayer: {i} with shape {agg_i.shape} recovered?: {diff==0}')
+            
+    recovered = 1. - (diff / num_par)
+    return recovered
+

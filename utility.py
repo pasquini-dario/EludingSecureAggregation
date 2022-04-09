@@ -41,25 +41,13 @@ def deepCopyModel(model):
         _model.trainable_variables[i].assign(model.trainable_variables[i])        
     return _model
 
-def check_gradient(aggregation, target_gradient, verbose=True):
-    assert len(aggregation) == len(target_gradient)
-    n = len(aggregation)
-    
-    num_par = 0
-    different_par = 0
-    for i in range(n):
-        agg_i = aggregation[i].reshape(-1)
-        tar_i = target_gradient[i].reshape(-1)
-        
-        assert len(agg_i) == len(tar_i)
-        
-        num_par += len(agg_i)
-        diff = (agg_i != tar_i).sum()
-        different_par += diff
-        
-        if verbose:
-            print(f'layer: {i} with shape {agg_i.shape} recovered?: {diff==0}')
-            
-    recovered = 1. - (diff / num_par)
-    return recovered
+class lr_schlr(tf.keras.optimizers.schedules.LearningRateSchedule):
+    def __init__(self, initial_learning_rate, steps):
+        self.learning_rate = initial_learning_rate
+        self.steps = steps 
 
+    def __call__(self, step):
+        if step in self.steps:
+            self.learning_rate = self.learning_rate *.1
+            print(f"\t[Scaling learning rate: {np.round(self.learning_rate, 4)}]")
+        return self.learning_rate
