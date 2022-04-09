@@ -6,6 +6,7 @@ def repack_model(model, layer_idx, kernel_idx):
     canary_layer = model.layers[layer_idx]
     print("---->", canary_layer.name, canary_layer.output.shape)
     canary_layer = canary_layer.output[:, :, :, kernel_idx]
+    print("-------->", canary_layer.shape)
     _model = tf.keras.Model([model.input], [model.output, canary_layer])
     return _model
 
