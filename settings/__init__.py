@@ -1,11 +1,21 @@
 import tensorflow as tf
 
-rng_seed = None
+rng_seed = 1
 
 batch_size_train = 256
 batch_size_test = 64
-batch_size_tests = [32, 64, 128, 512]
+batch_size_tests = [32, 64, 128, 256, 512]
+max_num_batches_eval = 150
 data_aug_shadow = False
+
+# 0 MSE, 1 BinaryCrossEntropy
+injection_type = 1
+if injection_type == 0:
+    pos_w = 1
+    loss_threshold = 0.0001
+elif injection_type == 1:
+    pos_w = 5
+    loss_threshold = 0.0003
 
 # if pretrain model before canary injection (simulating FL)
 pre_train = False
@@ -13,8 +23,6 @@ pre_train = False
 model_id = 'resnet20'
 canary_id = 'last_layer'
 max_number_of_iters = 2000
-loss_threshold = 0.0005
-
 
 # FedAVG
 num_iter_fedAVG = 15

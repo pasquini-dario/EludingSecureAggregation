@@ -23,17 +23,18 @@ if __name__ == '__main__':
         setting = sys.argv[1]
         id = int(sys.argv[2])
     except:
-        sys.exit(1)
-        
+        sys.exit(1)    
         
     output = []
         
     C = importlib.import_module(setting)
-    tf.random.set_seed(C.rng_seed)
+    rng_seed = C.rng_seed + id
+    tf.random.set_seed(rng_seed)
+    np.random.seed(rng_seed)    
+            
+    output.append(rng_seed)
     
-    #output.append(C)
-        
-    name = '_'.join(map(str,[C.dataset_key, C.dataset_key_shadow, C.batch_size_train, C.loss_threshold, C.model_id, C.canary_id, C.loss_threshold, C.learning_rate_fedAVG]))
+    name = '_'.join(map(str,[C.dataset_key, C.dataset_key_shadow, C.injection_type, C.pos_w, C.batch_size_train, C.loss_threshold, C.model_id, C.canary_id, C.learning_rate_fedAVG]))
     name = f'{id}-{name}'
     output_path = os.path.join(home_output, name)
     print(name)
@@ -66,7 +67,8 @@ if __name__ == '__main__':
         shadow,
         pre_canary_layer_trainable_variables,
         C.opt,
-        loss_threshold=C.loss_threshold
+        loss_threshold=C.loss_threshold,
+        w=C.pos_w,
     )
     
     if not ths_reached:
@@ -74,7 +76,6 @@ if __name__ == '__main__':
         sys.exit(1)
     
     output.append(inj_logs)
-    output.append(ths_reached)
     
     # prepare evaluation function
     test_canary_fn = partial(
@@ -83,7 +84,8 @@ if __name__ == '__main__':
         variables=pre_canary_layer_trainable_variables,
         loss_function=loss_function,
         g_canary_shift=g_canary_shift,
-        kernel_idx=kernel_idx
+        kernel_idx=kernel_idx,
+        max_num_batches_eval=C.max_num_batches_eval
     )
     
     print("Evaluation FedSGD ....")
@@ -94,6 +96,8 @@ if __name__ == '__main__':
         score_FedSGD, failed_FedSGD = test_canary_fn(model, validation_i)
         print(sgd_batch_size_evaluation, score_FedSGD)
         scores_FedSGD.append( (sgd_batch_size_evaluation, (score_FedSGD, failed_FedSGD)) )
+        
+    output.append(scores_FedSGD)
         
     print("Evaluation FedAVG ....")
     canary_scores_FedAVG = local_training(

@@ -146,7 +146,7 @@ def inject_canary(
     min_num_iterations=1000,
     w=5,
 ):
-    LOG = []
+    LOG = [
 
     canary_shape = model.output[1].shape.as_list()[1:]
     class_num = model.output[0].shape[1]
@@ -193,7 +193,7 @@ def find_fail(X, acts):
             Xfail.append(X[i])
     return Xfail
 
-max_n = 60
+
 def evaluate_canary_attack(
     model,
     dataset_validation,
@@ -201,7 +201,8 @@ def evaluate_canary_attack(
     variables,
     loss_function,
     g_canary_shift=-1,
-    kernel_idx=0
+    kernel_idx=0,
+    max_num_batches_eval=None
 ):
     
     # tn fp
@@ -223,10 +224,6 @@ def evaluate_canary_attack(
         
         pos_g, pos_act = get_gradient(positive, y, model, loss_function, variables)
         pos_g = get_canary_gradient(pos_g, g_canary_shift, kernel_idx).sum().tolist()
-        
-        #print(np.any(pos_act[-1].numpy() > 0), (np.any(neg_act[-1].numpy() > 0)))
-        #print(pos_act[-1].numpy(), neg_act[-1].numpy())
-        #return
 
         neg[neg_g != 0] += 1
         pos[pos_g == 0] += 1
@@ -237,7 +234,7 @@ def evaluate_canary_attack(
         
         n += 1
 
-        if max_n and i >= max_n:
+        if max_num_batches_eval and i >= max_num_batches_eval:
             print("Max number of iterations evaluation reached!")
             break
 
