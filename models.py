@@ -117,3 +117,16 @@ def accuracy(y, y_):
     b = y == y_
     b = tf.cast(b, tf.float32)
     return tf.reduce_mean(b)
+
+
+
+models = {
+    'resnet20':resnet20,
+}
+
+canaries = {
+    'resnet20':{
+        'last_layer':(68, -2, 0)
+    }
+}
+

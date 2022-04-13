@@ -42,3 +42,29 @@ def get_gradient(x, y, model, loss_function, variables):
         loss = loss_function(y, y_)
     g = tape.gradient(loss, variables)
     return [gg.numpy() for gg in g], att
+
+
+def local_training(
+    model,
+    training_set,
+    num_iter,
+    learning_rate,
+    loss_function,
+    test_canary_fn
+):
+    opt = tf.keras.optimizers.SGD(learning_rate)
+    canary_scores = []
+    for i, (x, y) in enumerate(training_set):
+        with tf.GradientTape() as tape:
+            y_, att = model(x, training=True)
+            loss = loss_function(y, y_)
+        g = tape.gradient(loss, model.trainable_variables)
+        opt.apply_gradients(zip(g, model.trainable_variables))
+        
+        score, _ = test_canary_fn(model, training_set)
+        canary_scores.append(score)
+        print(f' FedAVG round: {i+1}\n\t{score}')
+        
+        if i == num_iter-1:
+            break
+    return canary_scores
