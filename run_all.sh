@@ -1,4 +1,4 @@
-conf="32 8 0 0"
+conf="16 8 0 0"
 run="python multiGPU_runs.py"
 
 $run settings.c10_c100 $conf

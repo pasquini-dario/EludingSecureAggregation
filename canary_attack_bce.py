@@ -146,7 +146,7 @@ def inject_canary(
     min_num_iterations=1000,
     w=5,
 ):
-    LOG = [
+    LOG = []
 
     canary_shape = model.output[1].shape.as_list()[1:]
     class_num = model.output[0].shape[1]

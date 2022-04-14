@@ -73,7 +73,42 @@ def resnet20(input_shape, num_classes, bn=True, activation='relu'):
     logits = tf.keras.layers.Dense(num_classes)(x)
     y_ = tf.nn.softmax(logits)
     
-    return tf.keras.Model(x_in, y_)    
+    return tf.keras.Model(x_in, y_)
+
+
+def resnet32(input_shape, num_classes, bn=True, activation='relu'):
+    x_in = layers.Input(input_shape)
+    
+    x = layers.Conv2D(filters=16, kernel_size=3, strides=1, padding="same", use_bias=False)(x_in)
+   
+    if bn:
+        x = NORM()(x)
+    x = layers.Activation("relu")(x)
+    
+    x = plain_res_block(x, 16, 1, bn)
+    x = plain_res_block(x, 16, 1, bn)
+    x = plain_res_block(x, 16, 1, bn)
+    x = plain_res_block(x, 16, 1, bn)
+    x = plain_res_block(x, 16, 1, bn)
+    
+    x = plain_res_block(x, 32, 2, bn)
+    x = plain_res_block(x, 32, 1, bn)
+    x = plain_res_block(x, 32, 1, bn)
+    x = plain_res_block(x, 32, 1, bn)
+    x = plain_res_block(x, 32, 1, bn)
+    
+    x = plain_res_block(x, 64, 2, bn)
+    x = plain_res_block(x, 64, 1, bn)
+    x = plain_res_block(x, 64, 1, bn)
+    x = plain_res_block(x, 64, 1, bn)
+    x = plain_res_block(x, 64, 1, bn)
+    x = layers.AveragePooling2D(pool_size=8)(x)
+        
+    x = layers.Flatten()(x)
+    logits = tf.keras.layers.Dense(num_classes)(x)
+    y_ = tf.nn.softmax(logits)
+    
+    return tf.keras.Model(x_in, y_)
 
 # def resnet38(input_shape, num_classes, batch_norm=tf.keras.layers.LayerNormalization, activation='relu'):
 #     xin = tf.keras.layers.Input(input_shape)
@@ -122,11 +157,16 @@ def accuracy(y, y_):
 
 models = {
     'resnet20':resnet20,
+    'resnet32':resnet32,
 }
 
 canaries = {
     'resnet20':{
         'last_layer':(68, -2, 0)
+    },
+    'resnet32':{
+        'last_layer':(110, -2, 0)
     }
+    
 }
 

@@ -22,11 +22,11 @@ pre_train = False
 
 model_id = 'resnet20'
 canary_id = 'last_layer'
-max_number_of_iters = 2000
+max_number_of_iters = 3000
 
 # FedAVG
 num_iter_fedAVG = 15
-learning_rate_fedAVG = 0.001
+learning_rate_fedAVG = 0.0005
 
 # attack
 max_number_of_iters = 10000
