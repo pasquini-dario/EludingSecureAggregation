@@ -20,13 +20,13 @@ elif injection_type == 1:
 # if pretrain model before canary injection (simulating FL)
 pre_train = False
 
-model_id = 'resnet20'
+model_id = 'resnet32'
 canary_id = 'last_layer'
 max_number_of_iters = 3000
 
 # FedAVG
 num_iter_fedAVG = 15
-learning_rate_fedAVG = 0.0005
+learning_rate_fedAVG = 0.001
 
 # attack
 max_number_of_iters = 10000
