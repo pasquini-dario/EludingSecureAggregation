@@ -7,7 +7,7 @@ import h5py
 img_size = 32
 buffer_size = 1000
 
-PATH_tinyimagenet = '/home/pasquini/STORAGE/DeepLearningDatasets/tiny-imagenet-200/tinyImagenet_nolabelforval.hdf5'
+PATH_tinyimagenet = "put tinyimagenet.h5 path here or re-implement load_dataset_classification"
 
 @tf.function
 def data_aug(x):
