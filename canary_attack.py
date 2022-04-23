@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import tqdm 
 
 import models
 from datasets import load_dataset_classification, get_one_sample
@@ -41,6 +42,7 @@ def setup_model(
 
 
 
+@tf.function
 def make_loss(att, mask, W):
     s = att.shape[1] * att.shape[2]
     att = tf.reshape(att, (-1, s))
@@ -50,6 +52,7 @@ def make_loss(att, mask, W):
     loss = tf.reduce_mean(loss)
     return loss
 
+@tf.function
 def attack_iteration(model, x, mask, W, variables, opt):   
     with tf.GradientTape() as tape:
         _, att = model(x, training=True)    
@@ -70,7 +73,7 @@ def inject_canary(
     opt,
     loss_threshold=0.0010,
     check_steps=10,
-    min_num_iterations=1000,
+    min_num_iterations=500,
     w=5,
 ):
     LOG = []
@@ -85,7 +88,7 @@ def inject_canary(
     mask_b[-1] = (batch_size - 1) * w
 
     loss_avg = 0.
-    for i, batch in enumerate(shadow_dataset):
+    for i, batch in tqdm.tqdm(enumerate(shadow_dataset)):
         x, _ = batch
         
         x = tf.concat([x[:-1], target], 0)
