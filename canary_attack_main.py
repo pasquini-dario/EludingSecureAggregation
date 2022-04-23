@@ -22,6 +22,7 @@ if __name__ == '__main__':
         setting = sys.argv[1]
         id = int(sys.argv[2])
     except:
+        print("[USAGE] setting_file id")
         sys.exit(1)    
         
     output = []
@@ -33,13 +34,8 @@ if __name__ == '__main__':
             
     output.append(rng_seed)
     
-    
-    if C.injection_type == 0:
-        print("\t MSE")
-        from canary_attack_mse import load_dataset, setup_model, evaluate_canary_attack, inject_canary
-    elif C.injection_type == 1:
-        print("\t BCE")
-        from canary_attack_bce import load_dataset, setup_model, evaluate_canary_attack, inject_canary
+    if C.injection_type == 1:
+        from canary_attack import load_dataset, setup_model, evaluate_canary_attack, inject_canary
 
     name = '_'.join(map(str,[C.dataset_key, C.dataset_key_shadow, C.injection_type, C.pos_w, C.batch_size_train, C.loss_threshold, C.model_id, C.canary_id, C.learning_rate_fedAVG]))
     name = f'{id}-{name}'

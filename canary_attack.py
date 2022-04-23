@@ -28,7 +28,6 @@ def setup_model(
     canary_id,
     x_shape,
     class_num,
-    pre_train=False
 ):
     make_model = models.models[model_id]
     model = make_model(x_shape, class_num)
@@ -37,82 +36,10 @@ def setup_model(
     
     model = repack_model(model, layer_idx, kernel_idx)
     pre_canary_layer_trainable_variables = get_preCanaryTrainable_variables_Conv2D(model, layer_idx+1)
-    
-    if pre_train:
-        assert False
 
     return model, layer_idx, g_canary_shift, kernel_idx, pre_canary_layer_trainable_variables
 
 
-### attack ############################################################
-
-
-# def make_loss(att, mask, W):
-#     print("check shape MSE")
-#     loss = tf.keras.losses.MSE(att, mask)
-#     loss = loss * W
-#     loss = tf.reduce_mean(loss)
-#     return loss
-
-# def attack_iteration(model, x, mask, W, variables, opt):   
-#     with tf.GradientTape() as tape:
-#         _, att = model(x, training=True)    
-#         loss = make_loss(att, mask, W)  
-        
-#     gradients = tape.gradient(loss, variables)
-#     opt.apply_gradients(zip(gradients, variables))
-#     return loss
-
-
-# def inject_canary(
-#     max_number_of_iters,
-#     batch_size,
-#     model,
-#     target,
-#     shadow_dataset,
-#     variables,
-#     opt,
-#     loss_threshold=0.0010,
-#     check_steps=10,
-#     min_num_iterations=1000,
-#     w=1,
-# ):
-#     LOG = []
-
-#     canary_shape = model.output[1].shape.as_list()[1:]
-#     class_num = model.output[0].shape[1]
-    
-#     mask = np.ones((batch_size, *canary_shape), np.float32) * -w
-#     mask[-1] = w
-
-#     mask_b = np.ones((batch_size, 1), np.float32)
-#     mask_b[-1] = batch_size - 1
-
-#     loss_avg = 0.
-#     for i, batch in enumerate(shadow_dataset):
-#         x, _ = batch
-        
-#         x = tf.concat([x[:-1], target], 0)
-#         loss = attack_iteration(model, x, mask, mask_b, variables, opt)
-#         loss = loss.numpy()
-        
-#         loss_avg += loss
-        
-#         if i % check_steps == 0:
-#             loss_avg /= check_steps
-#             LOG.append(loss)
-            
-#             if loss_avg <= loss_threshold and i > min_num_iterations:
-#                 print("Loss Threshold reached!")
-#                 return LOG, True
-                
-#             loss_avg = 0.
-
-#         if i > max_number_of_iters:
-#             print("Max number of iterations reached!")
-#             return LOG, False
-
-#     return LOG, False
 
 def make_loss(att, mask, W):
     s = att.shape[1] * att.shape[2]

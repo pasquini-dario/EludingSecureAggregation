@@ -7,6 +7,8 @@ import h5py
 img_size = 32
 buffer_size = 1000
 
+PATH_tinyimagenet = '/home/pasquini/STORAGE/DeepLearningDatasets/tiny-imagenet-200/tinyImagenet_nolabelforval.hdf5'
+
 @tf.function
 def data_aug(x):
     x = tf.pad(x, [[4, 4], [4, 4], [0, 0]])
@@ -39,7 +41,7 @@ def get_one_sample(dataset, buffer_size=buffer_size):
 
 def load_dataset_classification(key, batch_size, split='train', repeat=-1, da=False):
     
-    if key in ['cifar10', 'cifar100', 'stl10']:
+    if key in ['cifar10', 'cifar100']:
         ds, info = tfds.load(
             key,
             split=split,
@@ -54,7 +56,7 @@ def load_dataset_classification(key, batch_size, split='train', repeat=-1, da=Fa
         #x_shape = info.features['image'].shape  
         
     if key in ['tinyimagenet']:
-        path = '/home/pasquini/STORAGE/DeepLearningDatasets/tiny-imagenet-200/tinyImagenet_nolabelforval.hdf5'
+        path = PATH_tinyimagenet
         with h5py.File(path, 'r') as f:
             x = f['X_'+split][:]
             y = f['Y_'+split][:]
@@ -67,7 +69,7 @@ def load_dataset_classification(key, batch_size, split='train', repeat=-1, da=Fa
     x_shape = (img_size, img_size, 3)
     
     resize = False
-    if key in ['stl10', 'tinyimagenet']:
+    if key in ['tinyimagenet']:
         resize = True
         
     parse_img = partial(std_parse_img, resize=resize, da=da)      
