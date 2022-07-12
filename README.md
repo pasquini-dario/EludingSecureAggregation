@@ -1,7 +1,7 @@
 # Eluding Secure Aggregation in Federated Learning via Model Inconsistency
 https://arxiv.org/abs/2111.07380
 
-The folder 'EludingSecureAggregation' contains the code to replicate our results as well as the data collected and reported in the paper.
+The folder 'EludingSecureAggregation' contains the code to replicate our results.
 
 **Requirements**:
 
