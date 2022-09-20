@@ -1,5 +1,5 @@
 # Eluding Secure Aggregation in Federated Learning via Model Inconsistency
-https://arxiv.org/abs/2111.07380
+Accepted at CCS'22 -> https://arxiv.org/abs/2111.07380
 
 The folder 'EludingSecureAggregation' contains the code to replicate our results.
 
